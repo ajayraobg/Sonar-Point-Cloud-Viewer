@@ -1,0 +1,1381 @@
+L 1 "Source\LCD\LCD_graphics.c"
+N#include "LCD.h"
+L 1 "Source\LCD\LCD.h" 1
+N#ifndef LCD_H
+N#define LCD_H
+N
+N#include <stdint.h>
+L 1 "C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h" 1
+N/* Copyright (C) ARM Ltd., 1999,2014 */
+N/* All rights reserved */
+N
+N/*
+N * RCS $Revision$
+N * Checkin $Date$
+N * Revising $Author: agrant $
+N */
+N
+N#ifndef __stdint_h
+N#define __stdint_h
+N#define __ARMCLIB_VERSION 5060034
+N
+N  #ifdef __INT64_TYPE__
+S    /* armclang predefines '__INT64_TYPE__' and '__INT64_C_SUFFIX__' */
+S    #define __INT64 __INT64_TYPE__
+N  #else
+N    /* armcc has builtin '__int64' which can be used in --strict mode */
+N    #define __INT64 __int64
+N    #define __INT64_C_SUFFIX__ ll
+N  #endif
+N  #define __PASTE2(x, y) x ## y
+N  #define __PASTE(x, y) __PASTE2(x, y)
+N  #define __INT64_C(x)  __ESCAPE__(__PASTE(x, __INT64_C_SUFFIX__))
+N  #define __UINT64_C(x)  __ESCAPE__(__PASTE(x ## u, __INT64_C_SUFFIX__))
+N  #if defined(__clang__) || (defined(__ARMCC_VERSION) && !defined(__STRICT_ANSI__))
+X  #if 0L || (1L && !0L)
+N    /* armclang and non-strict armcc allow 'long long' in system headers */
+N    #define __LONGLONG long long
+N  #else
+S    /* strict armcc has '__int64' */
+S    #define __LONGLONG __int64
+N  #endif
+N
+N  #ifndef __STDINT_DECLS
+N  #define __STDINT_DECLS
+N
+N    #undef __CLIBNS
+N
+N    #ifdef __cplusplus
+S      namespace std {
+S          #define __CLIBNS std::
+S          extern "C" {
+N    #else
+N      #define __CLIBNS
+N    #endif  /* __cplusplus */
+N
+N
+N/*
+N * 'signed' is redundant below, except for 'signed char' and if
+N * the typedef is used to declare a bitfield.
+N */
+N
+N    /* 7.18.1.1 */
+N
+N    /* exact-width signed integer types */
+Ntypedef   signed          char int8_t;
+Ntypedef   signed short     int int16_t;
+Ntypedef   signed           int int32_t;
+Ntypedef   signed       __INT64 int64_t;
+Xtypedef   signed       __int64 int64_t;
+N
+N    /* exact-width unsigned integer types */
+Ntypedef unsigned          char uint8_t;
+Ntypedef unsigned short     int uint16_t;
+Ntypedef unsigned           int uint32_t;
+Ntypedef unsigned       __INT64 uint64_t;
+Xtypedef unsigned       __int64 uint64_t;
+N
+N    /* 7.18.1.2 */
+N
+N    /* smallest type of at least n bits */
+N    /* minimum-width signed integer types */
+Ntypedef   signed          char int_least8_t;
+Ntypedef   signed short     int int_least16_t;
+Ntypedef   signed           int int_least32_t;
+Ntypedef   signed       __INT64 int_least64_t;
+Xtypedef   signed       __int64 int_least64_t;
+N
+N    /* minimum-width unsigned integer types */
+Ntypedef unsigned          char uint_least8_t;
+Ntypedef unsigned short     int uint_least16_t;
+Ntypedef unsigned           int uint_least32_t;
+Ntypedef unsigned       __INT64 uint_least64_t;
+Xtypedef unsigned       __int64 uint_least64_t;
+N
+N    /* 7.18.1.3 */
+N
+N    /* fastest minimum-width signed integer types */
+Ntypedef   signed           int int_fast8_t;
+Ntypedef   signed           int int_fast16_t;
+Ntypedef   signed           int int_fast32_t;
+Ntypedef   signed       __INT64 int_fast64_t;
+Xtypedef   signed       __int64 int_fast64_t;
+N
+N    /* fastest minimum-width unsigned integer types */
+Ntypedef unsigned           int uint_fast8_t;
+Ntypedef unsigned           int uint_fast16_t;
+Ntypedef unsigned           int uint_fast32_t;
+Ntypedef unsigned       __INT64 uint_fast64_t;
+Xtypedef unsigned       __int64 uint_fast64_t;
+N
+N    /* 7.18.1.4 integer types capable of holding object pointers */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+Stypedef   signed       __INT64 intptr_t;
+Stypedef unsigned       __INT64 uintptr_t;
+N#else
+Ntypedef   signed           int intptr_t;
+Ntypedef unsigned           int uintptr_t;
+N#endif
+N
+N    /* 7.18.1.5 greatest-width integer types */
+Ntypedef   signed     __LONGLONG intmax_t;
+Xtypedef   signed     long long intmax_t;
+Ntypedef unsigned     __LONGLONG uintmax_t;
+Xtypedef unsigned     long long uintmax_t;
+N
+N
+N#if !defined(__cplusplus) || defined(__STDC_LIMIT_MACROS)
+X#if !0L || 0L
+N
+N    /* 7.18.2.1 */
+N
+N    /* minimum values of exact-width signed integer types */
+N#define INT8_MIN                   -128
+N#define INT16_MIN                -32768
+N#define INT32_MIN          (~0x7fffffff)   /* -2147483648 is unsigned */
+N#define INT64_MIN  __INT64_C(~0x7fffffffffffffff) /* -9223372036854775808 is unsigned */
+N
+N    /* maximum values of exact-width signed integer types */
+N#define INT8_MAX                    127
+N#define INT16_MAX                 32767
+N#define INT32_MAX            2147483647
+N#define INT64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of exact-width unsigned integer types */
+N#define UINT8_MAX                   255
+N#define UINT16_MAX                65535
+N#define UINT32_MAX           4294967295u
+N#define UINT64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.2 */
+N
+N    /* minimum values of minimum-width signed integer types */
+N#define INT_LEAST8_MIN                   -128
+N#define INT_LEAST16_MIN                -32768
+N#define INT_LEAST32_MIN          (~0x7fffffff)
+N#define INT_LEAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+N
+N    /* maximum values of minimum-width signed integer types */
+N#define INT_LEAST8_MAX                    127
+N#define INT_LEAST16_MAX                 32767
+N#define INT_LEAST32_MAX            2147483647
+N#define INT_LEAST64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of minimum-width unsigned integer types */
+N#define UINT_LEAST8_MAX                   255
+N#define UINT_LEAST16_MAX                65535
+N#define UINT_LEAST32_MAX           4294967295u
+N#define UINT_LEAST64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.3 */
+N
+N    /* minimum values of fastest minimum-width signed integer types */
+N#define INT_FAST8_MIN           (~0x7fffffff)
+N#define INT_FAST16_MIN          (~0x7fffffff)
+N#define INT_FAST32_MIN          (~0x7fffffff)
+N#define INT_FAST64_MIN  __INT64_C(~0x7fffffffffffffff)
+N
+N    /* maximum values of fastest minimum-width signed integer types */
+N#define INT_FAST8_MAX             2147483647
+N#define INT_FAST16_MAX            2147483647
+N#define INT_FAST32_MAX            2147483647
+N#define INT_FAST64_MAX  __INT64_C(9223372036854775807)
+N
+N    /* maximum values of fastest minimum-width unsigned integer types */
+N#define UINT_FAST8_MAX            4294967295u
+N#define UINT_FAST16_MAX           4294967295u
+N#define UINT_FAST32_MAX           4294967295u
+N#define UINT_FAST64_MAX __UINT64_C(18446744073709551615)
+N
+N    /* 7.18.2.4 */
+N
+N    /* minimum value of pointer-holding signed integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define INTPTR_MIN INT64_MIN
+N#else
+N#define INTPTR_MIN INT32_MIN
+N#endif
+N
+N    /* maximum value of pointer-holding signed integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define INTPTR_MAX INT64_MAX
+N#else
+N#define INTPTR_MAX INT32_MAX
+N#endif
+N
+N    /* maximum value of pointer-holding unsigned integer type */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define UINTPTR_MAX UINT64_MAX
+N#else
+N#define UINTPTR_MAX UINT32_MAX
+N#endif
+N
+N    /* 7.18.2.5 */
+N
+N    /* minimum value of greatest-width signed integer type */
+N#define INTMAX_MIN  __ESCAPE__(~0x7fffffffffffffffll)
+N
+N    /* maximum value of greatest-width signed integer type */
+N#define INTMAX_MAX  __ESCAPE__(9223372036854775807ll)
+N
+N    /* maximum value of greatest-width unsigned integer type */
+N#define UINTMAX_MAX __ESCAPE__(18446744073709551615ull)
+N
+N    /* 7.18.3 */
+N
+N    /* limits of ptrdiff_t */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define PTRDIFF_MIN INT64_MIN
+S#define PTRDIFF_MAX INT64_MAX
+N#else
+N#define PTRDIFF_MIN INT32_MIN
+N#define PTRDIFF_MAX INT32_MAX
+N#endif
+N
+N    /* limits of sig_atomic_t */
+N#define SIG_ATOMIC_MIN (~0x7fffffff)
+N#define SIG_ATOMIC_MAX   2147483647
+N
+N    /* limit of size_t */
+N#if __sizeof_ptr == 8
+X#if 4 == 8
+S#define SIZE_MAX UINT64_MAX
+N#else
+N#define SIZE_MAX UINT32_MAX
+N#endif
+N
+N    /* limits of wchar_t */
+N    /* NB we have to undef and redef because they're defined in both
+N     * stdint.h and wchar.h */
+N#undef WCHAR_MIN
+N#undef WCHAR_MAX
+N
+N#if defined(__WCHAR32) || (defined(__ARM_SIZEOF_WCHAR_T) && __ARM_SIZEOF_WCHAR_T == 4)
+X#if 0L || (0L && __ARM_SIZEOF_WCHAR_T == 4)
+S  #define WCHAR_MIN   0
+S  #define WCHAR_MAX   0xffffffffU
+N#else
+N  #define WCHAR_MIN   0
+N  #define WCHAR_MAX   65535
+N#endif
+N
+N    /* limits of wint_t */
+N#define WINT_MIN (~0x7fffffff)
+N#define WINT_MAX 2147483647
+N
+N#endif /* __STDC_LIMIT_MACROS */
+N
+N#if !defined(__cplusplus) || defined(__STDC_CONSTANT_MACROS)
+X#if !0L || 0L
+N
+N    /* 7.18.4.1 macros for minimum-width integer constants */
+N#define INT8_C(x)   (x)
+N#define INT16_C(x)  (x)
+N#define INT32_C(x)  (x)
+N#define INT64_C(x)  __INT64_C(x)
+N
+N#define UINT8_C(x)  (x ## u)
+N#define UINT16_C(x) (x ## u)
+N#define UINT32_C(x) (x ## u)
+N#define UINT64_C(x) __UINT64_C(x)
+N
+N    /* 7.18.4.2 macros for greatest-width integer constants */
+N#define INTMAX_C(x)  __ESCAPE__(x ## ll)
+N#define UINTMAX_C(x) __ESCAPE__(x ## ull)
+N
+N#endif /* __STDC_CONSTANT_MACROS */
+N
+N    #ifdef __cplusplus
+S         }  /* extern "C" */
+S      }  /* namespace std */
+N    #endif /* __cplusplus */
+N  #endif /* __STDINT_DECLS */
+N
+N  #ifdef __cplusplus
+S    #ifndef __STDINT_NO_EXPORTS
+S      using ::std::int8_t;
+S      using ::std::int16_t;
+S      using ::std::int32_t;
+S      using ::std::int64_t;
+S      using ::std::uint8_t;
+S      using ::std::uint16_t;
+S      using ::std::uint32_t;
+S      using ::std::uint64_t;
+S      using ::std::int_least8_t;
+S      using ::std::int_least16_t;
+S      using ::std::int_least32_t;
+S      using ::std::int_least64_t;
+S      using ::std::uint_least8_t;
+S      using ::std::uint_least16_t;
+S      using ::std::uint_least32_t;
+S      using ::std::uint_least64_t;
+S      using ::std::int_fast8_t;
+S      using ::std::int_fast16_t;
+S      using ::std::int_fast32_t;
+S      using ::std::int_fast64_t;
+S      using ::std::uint_fast8_t;
+S      using ::std::uint_fast16_t;
+S      using ::std::uint_fast32_t;
+S      using ::std::uint_fast64_t;
+S      using ::std::intptr_t;
+S      using ::std::uintptr_t;
+S      using ::std::intmax_t;
+S      using ::std::uintmax_t;
+S    #endif
+N  #endif /* __cplusplus */
+N
+N#undef __INT64
+N#undef __LONGLONG
+N
+N#endif /* __stdint_h */
+N
+N/* end of stdint.h */
+L 5 "Source\LCD\LCD.h" 2
+N#include "misc.h"
+L 1 ".\Include\misc.h" 1
+N#ifndef MISC_H
+N#define MISC_H
+N
+N#define MIN(a,b) ((a)<(b)? a : b)
+N#define MAX(a,b) ((a)>(b)? a : b)
+N
+N#endif
+L 6 "Source\LCD\LCD.h" 2
+N
+N// #include "ST7789.h"
+N
+Ntypedef struct {
+N	uint32_t X, Y;
+N} PT_T;
+N
+Ntypedef struct {
+N	uint8_t R, G, B; // note: using 5-6-5 color mode for LCD. 
+N									 // Values are left aligned here
+N} COLOR_T;
+N	
+N/*** ***/
+N
+N// Ported functions for common LCD API
+N
+N/** Initialize the LCD
+N*/
+N void LCD_Init(void);
+N
+N/** Set pixel color
+N*/
+N void LCD_Plot_Pixel(PT_T * pos, COLOR_T * color);
+N
+N/** Refresh LCD from local MCU frame buffer
+N*/
+N void LCD_Refresh(void);
+N
+N/** Fill entire LCD with given color
+N*/
+N void LCD_Fill_Buffer(COLOR_T * color);
+N/** Fill specified rectangle with given color
+N*/
+N
+N/** Plot given byte of packed data at given position
+N*/
+N void LCD_Plot_Packed_Pixels(uint8_t fill_byte, PT_T * pos);
+N
+N/** Plot given byte of packed data at given position and next byte based on right-shift amount
+N*/
+Nvoid LCD_Plot_Packed_Pixels_Unaligned(uint8_t fill_byte, uint8_t r_shift, PT_T * pos);
+N
+N
+N/*** ***/
+N// Need to port these
+N void LCD_Fill_Rectangle(PT_T * p1, PT_T * p2, COLOR_T * color);
+N uint32_t LCD_Start_Rectangle(PT_T * p1, PT_T * p2);
+N void LCD_Write_Rectangle_Pixel(COLOR_T * color, unsigned int count);
+N
+N/*** ***/
+N 
+N void LCD_Set_BL(uint8_t on);
+N void LCD_Set_Backlight_Brightness(uint32_t brightness_percent);
+N void LCD_Text_Set_Colors(COLOR_T * foreground, COLOR_T * background);
+N
+N void LCD_Erase(void);
+N 
+N void LCD_Text_Test(void);
+N void LCD_Text_Init(uint8_t font_num);
+N void LCD_Text_PrintChar(PT_T * pos, char ch);
+N void LCD_Text_PrintStr(PT_T * pos, char * str);
+N void LCD_Text_PrintStr_RC( uint8_t  row, uint8_t col, char *  str);
+N
+N void Graphics_Test(void);
+N void LCD_Draw_Line(PT_T * p1, PT_T * p2, COLOR_T * color);
+N void LCD_Draw_Circle(PT_T * p1, int radius, COLOR_T * color, int filled);
+N
+N
+N void LCD_TS_Init(void);
+N uint32_t LCD_TS_Read(PT_T * position);
+N void LCD_TS_Blocking_Read(PT_T * position);
+N void LCD_TS_Test(void);
+N void LCD_TS_Calibrate(void);
+N
+N extern uint8_t G_LCD_char_width, G_LCD_char_height;
+N
+N#endif
+L 2 "Source\LCD\LCD_graphics.c" 2
+N#include "LCD_driver.h"
+L 1 "Source\LCD\LCD_driver.h" 1
+N#ifndef LCD_DRIVER_H
+N#define LCD_DRIVER_H
+N
+N#include <stdint.h>
+N
+N#define CTLR_ILI9341  (1)
+N#define CTLR_ST7789   (2)
+N#define CTLR_T6963  	(3)
+N
+N// #define LCD_CONTROLLER (CTLR_ILI9341) 
+N#define LCD_CONTROLLER (CTLR_ST7789) 
+N// #define LCD_CONTROLLER (CTLR_T6963) 
+N
+N#define SHIELD_VERSION (9)
+N
+N// Backlight
+N#define LCD_BL_TPM (TPM1)
+N#define LCD_BL_TPM_CHANNEL (0)
+N#define LCD_BL_TPM_FREQ (20000)
+N#define LCD_BL_PERIOD ((SystemCoreClock)/(2*(LCD_BL_TPM_FREQ)))
+N
+N// Touchscreen Hardware Interface
+N#if (SHIELD_VERSION == 9)
+X#if ((9) == 9)
+N#define LCD_TS_YD_CHANNEL (14)
+N#define LCD_TS_YU_CHANNEL (3)
+N#define LCD_TS_XL_CHANNEL (15) 
+N#define LCD_TS_XR_CHANNEL (7)
+N
+N#define LCD_TS_YD_PORT (PORTC)
+N#define LCD_TS_XL_PORT (PORTC)
+N#define LCD_TS_YU_PORT (PORTE)
+N#define LCD_TS_XR_PORT (PORTE)
+N
+N#define LCD_TS_YD_PT (PTC)
+N#define LCD_TS_XL_PT (PTC)
+N#define LCD_TS_YU_PT (PTE)
+N#define LCD_TS_XR_PT (PTE)
+N
+N#define LCD_TS_YD_BIT (0)
+N#define LCD_TS_XL_BIT (1)
+N#define LCD_TS_YU_BIT (22)
+N#define LCD_TS_XR_BIT (23)
+N
+N#elif (SHIELD_VERSION < 9)
+S
+S#define LCD_TS_YD_CHANNEL (0)
+S#define LCD_TS_YU_CHANNEL (3)
+S#define LCD_TS_XL_CHANNEL (4) 
+S#define LCD_TS_XR_CHANNEL (7)
+S
+S#define LCD_TS_YD_PORT (PORTE)
+S#define LCD_TS_XL_PORT (PORTE)
+S#define LCD_TS_YU_PORT (PORTE)
+S#define LCD_TS_XR_PORT (PORTE)
+S
+S#define LCD_TS_YD_PT (PTE)
+S#define LCD_TS_XL_PT (PTE)
+S#define LCD_TS_YU_PT (PTE)
+S#define LCD_TS_XR_PT (PTE)
+S
+S#define LCD_TS_YD_BIT (20)
+S#define LCD_TS_XL_BIT (21)
+S#define LCD_TS_YU_BIT (22)
+S#define LCD_TS_XR_BIT (23)
+S
+S#else
+S
+S#error "Must specify SHIELD_VERSION in LCD_driver.h"
+N#endif
+N
+N
+N// Touchscreen Configuration
+N#define TS_DELAY (1)
+N#define TS_CALIB_SAMPLES (10)
+N
+N/**************************************************************/
+N#define	GPIO_ResetBit(pos)	(FPTC->PCOR = MASK(pos))
+N#define	GPIO_SetBit(pos) 		(FPTC->PSOR = MASK(pos))
+N#define GPIO_Write(cmd) 		FPTC->PDOR &= ~LCD_DATA_MASK; \
+N														FPTC->PDOR |= (cmd & 0xff) << LCD_DB8_POS;
+X#define GPIO_Write(cmd) 		FPTC->PDOR &= ~LCD_DATA_MASK; 														FPTC->PDOR |= (cmd & 0xff) << LCD_DB8_POS;
+N/**************************************************************/
+N
+N#define LCD_CTRL_INIT_SEQ_END 0
+N#define LCD_CTRL_INIT_SEQ_CMD 1
+N#define LCD_CTRL_INIT_SEQ_DAT 2
+N
+Ntypedef struct {
+N	uint8_t Type;  // 0: end, 1: command, 2: data
+N	uint8_t Value;
+N} LCD_CTLR_INIT_SEQ_T; // sequence of commands and data for initializing LCD controller
+N
+N#endif
+L 3 "Source\LCD\LCD_graphics.c" 2
+N
+N#include "ST7789.h"
+L 1 "Source\LCD\ST7789.h" 1
+N#ifndef ST7789_H
+N#define ST7789_H
+N
+N#include "LCD_driver.h"
+N
+N#if (((LCD_CONTROLLER)==(CTLR_ILI9341)) || ((LCD_CONTROLLER)==(CTLR_ST7789)))
+X#if (((((2)))==((1))) || ((((2)))==((2))))
+N
+Nextern const LCD_CTLR_INIT_SEQ_T Init_Seq_ST7789[];
+Nextern const LCD_CTLR_INIT_SEQ_T Init_Seq_ILI9341[];
+N
+N#define LCD_WIDTH (240)
+N#define LCD_HEIGHT (320)
+N
+N#define BITS_PER_PIXEL				(24)
+N
+N
+N// TFT LCD Hardware Interface
+N// signals -- all on port C
+N#define LCD_DB8_POS (3)
+N#define LCD_DB15_POS (10)
+N#define LCD_D_NC_POS (12)
+N#define LCD_NWR_POS (13)
+N#define LCD_NRD_POS (16)
+N#define LCD_NRST_POS (17)
+N#define LCD_DATA_MASK (((unsigned )0x0ff) << LCD_DB8_POS)
+N
+N#endif // LCD Controller
+N
+N#endif // ST7789_H
+N
+L 5 "Source\LCD\LCD_graphics.c" 2
+N#include "T6963.h"
+L 1 "Source\LCD\T6963.h" 1
+N#ifndef T6963_H
+N#define T6963_H
+N
+N#include "LCD_driver.h"
+N/********************************************
+N * Filename: t6963.h                        *
+N *                                          *
+N * Description: Header file for t6963.c     *
+N *                                          *
+N *                                          *
+N * Date: 06/02/2003                         *
+N *******************************************/
+N 
+N#if ((LCD_CONTROLLER)==(CTLR_T6963))
+X#if ((((2)))==((3)))
+S 
+S#define BITS_PER_PIXEL				(1)
+S 
+S#define FAKE_READ 						1
+S#define FAKE_READ_DELAY_US		0 // Need at least 20 for text to work
+S#define WRITE_DELAY_US				3
+S
+S#define USE_LOCAL_FRAME_BUFFER 1
+S 
+S#define LCD_WIDTH (160)
+S#define LCD_HEIGHT (128)
+S 
+S/* LCD Parameters */
+S#define LCD_NUMBER_OF_SCREENS   0x01   
+S
+S// To Do - fix bug when character width is 8 and FS is 1
+S#define LCD_CHARACTER_WIDTH     8    /* Is character 8x8 or 6x8 (0x08 / 0x06) - see Font Select signal */
+S#define LCD_CHARACTER_HEIGHT    8    /* Is character 8x8 or 6x8 (0x08 / 0x06) */
+S
+S#define LCD_GRAPHICS_WIDTH      LCD_WIDTH   /* Width of display (0xA0 = 160 pixels, 0xF0 = 240 pixels) */
+S#define LCD_GRAPHICS_HEIGHT     LCD_HEIGHT    /* Height of display (0x80 = 128 pixels) */
+S#define LCD_GRAPHICS_WIDTH_BYTES   (LCD_GRAPHICS_WIDTH/8)    /* A graphic character is 8 bits wide (same as 8x8 char) */
+S#define LCD_GRAPHICS_SIZE   (LCD_GRAPHICS_WIDTH_BYTES * LCD_GRAPHICS_HEIGHT)  /* Size of graphics RAM - was 0x0800*/
+S
+S#define LCD_TEXT_WIDTH          (LCD_GRAPHICS_WIDTH/LCD_CHARACTER_WIDTH)    /* Text Width = Graphics Width / Character Width */
+S#define LCD_TEXT_HEIGHT         (LCD_GRAPHICS_HEIGHT/LCD_CHARACTER_HEIGHT)    	/* Text Height = Graphics Height / Character Height */
+S
+S#define LCD_INVERT 0
+S
+S#if LCD_INVERT
+S#define LCD_ON_BYTE (0)
+S#define LCD_OFF_BYTE (0xff)
+S#define LCD_ON_PIXEL (0)
+S#define LCD_OFF_PIXEL (1)
+S#else
+S#define LCD_ON_BYTE (0xff)
+S#define LCD_OFF_BYTE (0)
+S#define LCD_ON_PIXEL (1)
+S#define LCD_OFF_PIXEL (0)
+S#endif
+S
+S
+S/* Define the Memory Map */
+S
+S// CFAG160128EYYHTZ
+S#define LCD_TEXT_HOME       0x0000  
+S#define LCD_TEXT_SIZE       0x0C00  /* Size of text RAM */
+S#define LCD_GRAPHICS_HOME   0x0C00  
+S
+S#define LCD_CG_RAM_HOME     0x1800  /* start of CG RAM */
+S#define LCD_CG_RAM_SIZE     0x0800  /* length */
+S
+S
+S// #define LCD_TEXT_HOME       0x0A00  /* Graphics Area + Text Attribute Size (same size as text size) */
+S
+S#define LCD_TEXT_WINDOW_START 6
+S
+S/*  Memory Map for 160x128 pixel display */
+S/*  This display is made up of two screens */
+S/*  Both 160x64 pixels */
+S
+S/*  Screen 1 */
+S
+S/*  0x0000  ----------------------------- */
+S/*          | Graphic RAM Area          | */
+S/*          | 0x0000 to 0x07FF          | */
+S/*          | (256x64 pixels)           | */
+S/*  0x0800  ----------------------------- */
+S/*          | Text Attribute Area       | */
+S/*  0x0A00  ----------------------------- */
+S/*          | Text RAM Area             | */
+S/*          | 512 Bytes                 | */
+S/*          | (256x64 pixels)           | */
+S/*  0x0C00  ----------------------------- */
+S
+S/*  Screen 2 (Automatically derived from Screen 1) */
+S
+S/*  0x8000  ----------------------------- */
+S/*          | Graphic RAM Area          | */
+S/*          | 0x0000 to 0x07FF          | */
+S/*          | (256x64 pixels)           | */
+S/*  0x8800  ----------------------------- */
+S/*          | Text Attribute Area       | */
+S/*  0x8A00  ----------------------------- */
+S/*          | Text RAM Area             | */
+S/*          | 512 Bytes                 | */
+S/*          | (256x64 pixels)           | */
+S/*  0x8C00  ----------------------------- */
+S
+S/* Connections from LCD to MCU port bits: 
+S DB0 through DB7 are contiguous, starting with LSB at bit position PIN_DATA_SHIFT
+S 
+S  For example:
+S   - DB0 = PTC0
+S   - DB1 = PTC1
+S   - DB2 = PTC2
+S   - DB3 = PTC3
+S   - DB4 = PTC4
+S   - DB5 = PTC5
+S   - DB6 = PTC6
+S   - DB7 = PTC7
+S	 
+S   - C/D  = PTC8                                                              
+S	 - /WR  = PTC9
+S   - /RD  = PTC10
+S	 - /CE  = PTC11
+S	 - /RST = PTC12
+S																																				*/
+S
+S#if 1 // New connections
+S#define PIN_DATA_PORT					PORTC
+S#define PIN_DATA_PT						PTC
+S#define PIN_DATA_SHIFT				( 3 )
+S
+S#define PIN_CONTROL_PORT			PORTC
+S#define PIN_CONTROL_PT				PTC
+S#define PIN_CD_SHIFT					( 12 )
+S#define PIN_CD           			( 1 << PIN_CD_SHIFT)
+S
+S#define PIN_WR_SHIFT						( 13 )
+S#define PIN_WR                 ( 1 << PIN_WR_SHIFT)
+S
+S#define PIN_RD_SHIFT						( 16 )
+S#define PIN_RD                 ( 1 << PIN_RD_SHIFT)
+S
+S#define PIN_CE_SHIFT						( 11 )
+S#define PIN_CE                 ( 1 << PIN_CE_SHIFT)
+S
+S#define PIN_RST_SHIFT						( 17 )
+S#define PIN_RST                 ( 1 << PIN_RST_SHIFT)
+S
+S#else // Old connections
+S
+S#define PIN_DATA_PORT					PORTC
+S#define PIN_DATA_PT						PTC
+S#define PIN_DATA_SHIFT				( 0 )
+S
+S#define PIN_CONTROL_PORT			PORTC
+S#define PIN_CONTROL_PT				PTC
+S#define PIN_CD_SHIFT					( 8 )
+S#define PIN_CD           			( 1 << PIN_CD_SHIFT)
+S
+S#define PIN_WR_SHIFT						( 9 )
+S#define PIN_WR                 ( 1 << PIN_WR_SHIFT)
+S
+S#define PIN_RD_SHIFT						( 10 )
+S#define PIN_RD                 ( 1 << PIN_RD_SHIFT)
+S
+S#define PIN_CE_SHIFT						( 11 )
+S#define PIN_CE                 ( 1 << PIN_CE_SHIFT)
+S
+S#define PIN_RST_SHIFT						( 12 )
+S#define PIN_RST                 ( 1 << PIN_RST_SHIFT)
+S
+S#endif
+S
+S#define PINS_CONTROL						(PIN_CD | PIN_WR | PIN_RD | PIN_CE | PIN_RST)
+S#define PINS_DATA								(0xff << PIN_DATA_SHIFT)
+S
+S/* Enable Clock for peripheral driving LCD pins                               */
+S#define ENABLE_LCD_PORT_CLOCKS   	SIM->SCGC5 |= SIM_SCGC5_PORTC_MASK;	
+S
+S#define SET_LCD_DATA_OUT(x)       PIN_DATA_PT->PDOR = (PIN_DATA_PT->PDOR & ~PINS_DATA) | ((x) << PIN_DATA_SHIFT);
+S#define GET_LCD_DATA_IN           (((PIN_DATA_PT->PDIR & PINS_DATA) >> PIN_DATA_SHIFT) & 0xFF)
+S
+S/* Setting all pins to output mode                                            */
+S#define SET_LCD_ALL_DIR_OUT       { PIN_DATA_PT->PDDR = PIN_DATA_PT->PDDR | PINS_DATA; \
+S																PIN_E_PT->PDDR = PIN_E_PT->PDDR | PIN_E; \
+S																PIN_RW_PT->PDDR = PIN_RW_PT->PDDR | PIN_RW; \
+S																PIN_RS_PT->PDDR = PIN_RS_PT->PDDR | PIN_RS; }
+X#define SET_LCD_ALL_DIR_OUT       { PIN_DATA_PT->PDDR = PIN_DATA_PT->PDDR | PINS_DATA; 																PIN_E_PT->PDDR = PIN_E_PT->PDDR | PIN_E; 																PIN_RW_PT->PDDR = PIN_RW_PT->PDDR | PIN_RW; 																PIN_RS_PT->PDDR = PIN_RS_PT->PDDR | PIN_RS; }
+S
+S/* Setting DATA pins to input mode                                            */
+S#define SET_LCD_DATA_DIR_IN       PIN_DATA_PT->PDDR = PIN_DATA_PT->PDDR & ~PINS_DATA;
+S
+S/* Setting DATA pins to output mode                                           */
+S#define SET_LCD_DATA_DIR_OUT      PIN_DATA_PT->PDDR = PIN_DATA_PT->PDDR | PINS_DATA;
+S
+S/*--- */
+S
+S#define LCD_BUSY_FLAG_MASK				(0x80)
+S
+S/* Control Word Definitions */
+S#define LCD_CURSOR_POINTER_SET          0x21 // 00100001b
+S#define LCD_OFFSET_REGISTER_SET         0x22 // 00100010b
+S#define LCD_ADDRESS_POINTER_SET         0x24 // 00100100b
+S
+S#define LCD_TEXT_HOME_ADDRESS_SET       0x40 // 01000000b
+S#define LCD_TEXT_AREA_SET               0x41 // 01000001b
+S#define LCD_GRAPHIC_HOME_ADDRESS_SET    0x42 // 01000010b
+S#define LCD_GRAPHIC_AREA_SET            0x43 // 01000011b
+S
+S#define LCD_CG_ROM_MODE_OR              0x80 // 10000000b
+S#define LCD_CG_ROM_MODE_EXOR            0x81 // 10000001b
+S#define LCD_CG_ROM_MODE_AND             0x83 // 10000011b
+S#define LCD_CG_ROM_MODE_TEXT            0x84 // 10000100b
+S#define LCD_CG_RAM_MODE_OR              0x88 // 10001000b
+S#define LCD_CG_RAM_MODE_EXOR            0x89 // 10001001b
+S#define LCD_CG_RAM_MODE_AND             0x8b // 10001011b
+S#define LCD_CG_RAM_MODE_TEXT            0x8c // 10001100b
+S
+S/* 1001 0000 is all off, OR together for ON modes */
+S#define LCD_DISPLAY_MODES_ALL_OFF       0x90 // 10010000b
+S#define LCD_DISPLAY_MODES_GRAPHICS_ON   0x98 // 10011000b 
+S#define LCD_DISPLAY_MODES_TEXT_ON       0x94 // 10010100b 
+S#define LCD_DISPLAY_MODES_CURSOR_ON     0x92 // 10010010b
+S#define LCD_DISPLAY_MODES_CURSOR_BLINK  0x91 // 10010001b
+S
+S/* Cursor Pattern Select */
+S#define LCD_CURSOR_PATTERN_UNDERLINE    0xa0 // 10100000b
+S#define LCD_CURSOR_PATTERN_BLOCK        0xa7 // 10100111b
+S
+S/* Send Auto_XX Command, then block of data, then Auto_reset */
+S#define LCD_DATA_AUTO_WRITE_SET         0xb0 // 10110000b
+S#define LCD_DATA_AUTO_READ_SET          0xb1 // 10110001b
+S#define LCD_DATA_AUTO_RESET             0xb2 // 10110010b
+S
+S/* Send R/W Then one byte Data */
+S#define LCD_DATA_WRITE_AUTO_INCREMENT   0xc0 // 11000000b
+S#define LCD_DATA_READ_AUTO_INCREMENT    0xc1 // 11000001b
+S#define LCD_DATA_WRITE_NO_INCREMENT     0xc4 // 11000100b
+S#define LCD_DATA_READ_NO_INCREMENT      0xc5 // 11000101b
+S
+S/* Status Register Bits */
+S#define LCD_STATUS_BUSY1    0x01
+S#define LCD_STATUS_BUSY2    0x02
+S#define LCD_STATUS_DARRDY   0x04
+S#define LCD_STATUS_DAWRDY   0x08
+S
+S#define LCD_STATUS_CLR      0x20
+S#define LCD_STATUS_ERR      0x40
+S#define LCD_STATUS_BLINK    0x80
+S
+Stypedef struct {
+S	unsigned char x;
+S	unsigned char y;
+S} Point_T ;
+S
+S/* Definitions */
+S#define ALL_INPUTS  0x00
+S#define ALL_OUTPUTS 0xff
+S
+Sextern unsigned char FrameBuffer[LCD_GRAPHICS_WIDTH_BYTES][LCD_GRAPHICS_HEIGHT];
+S
+S// #define LCD_Plot_Packed_Pixels(bits, pos) GrLCD_fill_byte(bits, pos->X, pos->Y)
+S
+S/* Function Declarations */
+S// TODO: Update these based on unified API 
+S
+Svoid GrLCD_initialise(void);
+Svoid GrLCD_write_data(unsigned char data);
+Sunsigned char GrLCD_read_data(void);
+Svoid GrLCD_write_command(unsigned char data);
+Sunsigned char GrLCD_read_status(void);
+Svoid GrLCD_clear_graphics(void);
+Svoid GrLCD_clear_text(void);
+Svoid GrLCD_clear_CGRAM(void);
+Svoid GrLCD_refresh(void);
+S
+Svoid GrLCD_write_text(unsigned char character, unsigned char x, unsigned char y);
+Svoid GrLCD_write_string(unsigned char * str, unsigned char x, unsigned char y);
+Svoid GrLCD_fill_byte(unsigned char fill_byte, unsigned char x, unsigned char y);
+Svoid GrLCD_plot_pixel(unsigned char x, unsigned char y, unsigned char color);
+S
+Svoid GrLCD_set_pixel(unsigned char x, unsigned char y);
+Svoid GrLCD_clear_pixel(unsigned char x, unsigned char y);
+S
+Sunsigned char GrLCD_bit_to_byte(unsigned char bit);
+Svoid GrLCD_fill_screen_with_byte(unsigned char fill_byte);
+S
+Svoid GrLCD_DrawRectangle(unsigned char x1, unsigned char y1,
+S			 unsigned char x2, unsigned char y2, unsigned char c);
+S
+Svoid GrLCD_setup_test(void);
+Svoid Test_LCD_Plot_Speed(void);
+Svoid GrLCD_display_bitmap(unsigned char * p);
+S/** Display one row of a bitmap from flash.
+SCSNo: dataflash chip to read from
+Sp: address of start byte
+Swidth: number of bytes in row
+Srow_num: row on display to put pixels onto
+S*/
+Svoid GrLCD_display_bitmap_row(unsigned char CSNo, unsigned long p, unsigned width, unsigned int row_num);
+Svoid GrLCD_set_page(unsigned int adx);
+Svoid GrLCD_page_test(void);
+S
+S#define CLEAR_BITMASK(a,b)  (a->PCOR = b)
+S#define SET_BITMASK(a,b) 	(a->PSOR = b)
+S
+N#endif
+N
+N#endif // T6963_H
+N
+L 6 "Source\LCD\LCD_graphics.c" 2
+N
+N#define DRAW_RUNS_AS_LINES (0)
+N#define STEP 8
+N
+Nvoid Graphics_Test(void) {
+N	int x, y, r;
+N	PT_T p1, p2;
+N	COLOR_T c;
+N	volatile int n;
+N	
+N	p1.X = LCD_WIDTH/2;
+X	p1.X = (240)/2;
+N	p1.Y = LCD_HEIGHT/2;
+X	p1.Y = (320)/2;
+N
+N	c.R = 100;
+N	c.G = 255;
+N	c.B = 255;
+N
+N	LCD_Fill_Buffer(&c);
+N	LCD_Refresh();
+N
+N	c.G = 0;
+N	LCD_Fill_Buffer(&c);
+N	LCD_Refresh();
+N
+N	c.G = 255;
+N	p1.X = p1.Y = 0;
+N	for (x = 0; x<LCD_WIDTH; x++) {
+X	for (x = 0; x<(240); x++) {
+N		p1.X++;
+N		if (x&1)
+N			p1.Y++;
+N		LCD_Plot_Pixel(&p1, &c);
+N		LCD_Refresh();
+N	}
+N	
+N	// vertical lines
+N	p1.Y = 0;
+N	p2.Y = LCD_HEIGHT-1;
+X	p2.Y = (320)-1;
+N	for (x=0; x<LCD_WIDTH; x += 1) {
+X	for (x=0; x<(240); x += 1) {
+N		p1.X = p2.X = x;
+N		LCD_Draw_Line(&p1, &p2, &c);
+N		LCD_Refresh();
+N	}
+N	
+N	p1.X = LCD_WIDTH/2;
+X	p1.X = (240)/2;
+N	p1.Y = LCD_HEIGHT/2;
+X	p1.Y = (320)/2;
+N	c.G = 0xff;
+N
+N	// Do circles	
+N	// Time filled circles
+N	for (r = 100; r>8; r -= 1) {
+N		LCD_Draw_Circle(&p1, r, &c, 1);
+N		LCD_Refresh();
+N		c.B -= 8;
+N		c.G ^= 0xff;
+N		c.R -= 16;
+N	}
+N
+N	c.G = 100;
+N	for (x=0; x<LCD_WIDTH; x += STEP) {
+X	for (x=0; x<(240); x += 8) {
+N		p1.X = x+20;
+N		LCD_Draw_Circle(&p1, 5 + x/10, &c, 1);
+N		LCD_Refresh();
+N	}
+N	
+N	// Time drawing lines radiating from center
+N	p1.X = LCD_WIDTH/2;
+X	p1.X = (240)/2;
+N	p1.Y = LCD_HEIGHT/2;
+X	p1.Y = (320)/2;
+N	
+N	p2.Y = 0;
+N	c.G = 100;
+N	for (x=0; x<LCD_WIDTH; x += STEP) {
+X	for (x=0; x<(240); x += 8) {
+N		p2.X = x;
+N		LCD_Draw_Line(&p1, &p2, &c);
+N		LCD_Refresh();
+N	}
+N	
+N	c.G = 100;
+N	c.B = 100;
+N	c.R = 255;
+N	p2.X = LCD_WIDTH-1;
+X	p2.X = (240)-1;
+N	for (y=0; y<LCD_HEIGHT; y += STEP) {
+X	for (y=0; y<(320); y += 8) {
+N		p2.Y = y;
+N		LCD_Draw_Line(&p1, &p2, &c);
+N		LCD_Refresh();
+N	}
+N
+N	c.R = 100;
+N	c.B = 100;
+N	c.G = 255;
+N	p2.Y = LCD_HEIGHT-1;
+X	p2.Y = (320)-1;
+N	for (x=0; x<LCD_WIDTH; x += STEP) {
+X	for (x=0; x<(240); x += 8) {
+N		p2.X = x;
+N		LCD_Draw_Line(&p1, &p2, &c);
+N		LCD_Refresh();
+N	}
+N
+N	c.R = 200;
+N	c.B = 100;
+N	c.G = 255;
+N	p2.X = 0;
+N	for (y=0; y<LCD_HEIGHT; y += STEP) {
+X	for (y=0; y<(320); y += 8) {
+N		p2.Y = y;
+N		LCD_Draw_Line(&p1, &p2, &c);
+N		LCD_Refresh();
+N	}
+N
+N#if 0 	
+S	// Dither test
+S	c.G = 0;
+S	LCD_Fill_Buffer(&c);
+S	p1.X = 0;
+S	p2.X = LCD_WIDTH-1;
+S	p1.Y = p2.Y = LCD_HEIGHT/2;
+S	n = 0;
+S	c.G = 0xff;
+S	LCD_Draw_Line(&p1, &p2, &c);
+S	LCD_Refresh();
+S	p1.Y+=2;
+S	p2.Y+=2;
+S	while (1) {
+S		if (n++ & 1)
+S			c.G = 0xff;
+S		else 
+S			c.G = 0;
+S		LCD_Draw_Line(&p1, &p2, &c);
+S		LCD_Refresh();
+S	}
+N#endif
+N	
+N}
+N
+Nvoid LCD_Draw_Line(PT_T * p1, PT_T * p2, COLOR_T * color)
+N// Scan line conversion code from Michael Abrash
+N{
+N	PT_T p;
+N#if DRAW_RUNS_AS_LINES
+X#if (0)
+S	PT_T pe;
+N#endif
+N	
+N  int Temp, AdjUp, AdjDown, ErrorTerm, XAdvance, XDelta, YDelta;	 
+N  int WholeStep, InitialPixelCount, FinalPixelCount, i,j, RunLength;
+N  int XStart;
+N  int YStart;
+N  int XEnd;
+N  int YEnd;
+N
+N  XStart = p1->X;
+N  YStart = p1->Y;
+N  XEnd = p2->X;
+N  YEnd = p2->Y;
+N
+N  /* We'll always draw top to bottom, to reduce the number of cases we have to
+N     ** handle, and to make lines between the same endpoints draw the same pixels
+N  */
+N  if (YStart > YEnd) {
+N		Temp = YStart;
+N		YStart = YEnd;
+N		YEnd = Temp;
+N		Temp = XStart;
+N		XStart = XEnd;
+N		XEnd = Temp;
+N	}
+N
+N  /* Figure out whethere we're going left or right, and how far we're going
+N  ** horizontally  */
+N  XDelta = XEnd - XStart;
+N  if (XDelta < 0) {
+N      XAdvance = -1;
+N      XDelta = -XDelta;
+N	} else {
+N      XAdvance = 1;
+N  }
+N
+N  /* Figure out how far we're going vertically */
+N  YDelta = YEnd - YStart;
+N
+N  /* Special-case horizontal, vertical, and diagonal lines, for speed and
+N  ** to avoid nasty boundary conditions and division by 0
+N  */
+N
+N	p.X = XStart;
+N	p.Y = YStart;
+N	 
+N  /* Vertical Line case */
+N  if (XDelta == 0) {
+N    /* Vertical line */
+N#if DRAW_RUNS_AS_LINES
+X#if (0)
+S		pe.X = XEnd;
+S		pe.Y = YEnd;
+S		LCD_Fill_Rectangle(&p, &pe, color);
+N#else		
+N    for (i = 0; i <= YDelta; i++) {
+N				p.Y++;
+N				LCD_Plot_Pixel(&p, color);
+N     }
+N#endif
+N    return;
+N  }
+N  
+N  /* Horizontal Line Case */
+N  if (YDelta == 0) {
+N    /* Horizontal line */
+N#if DRAW_RUNS_AS_LINES
+X#if (0)
+S		pe.X = XEnd;
+S		pe.Y = YEnd;
+S		LCD_Fill_Rectangle(&p, &pe, color);
+N#else
+N    for (i = 0; i <= XDelta; i++) {
+N				LCD_Plot_Pixel(&p, color);
+N				p.X += XAdvance;
+N    }  
+N#endif
+N    return;
+N  }
+N   
+N  /* Diagonal Case */
+N  if (XDelta == YDelta) {
+N    /* Diagonal line */
+N    for (i = 0; i <= XDelta; i++)
+N      {
+N				LCD_Plot_Pixel(&p, color);
+N				p.X += XAdvance;
+N				p.Y++;
+N      }
+N    return;
+N  }
+N   
+N   
+N  /* Determine whether the line is X or Y major, and handle accordingly */
+N  if (XDelta >= YDelta) {
+N    /* X major line */
+N    /* Minimum # of pixels in a run in this line */
+N    WholeStep = XDelta / YDelta;													/* DIV */
+N    
+N    /* Error term adjust eacn time Y steps by 1; used to tel when one
+N    ** extra pixel should be drawn as part of a run, to account for
+N    ** fractional steps along the X axis per 1-pixel steps along Y
+N    */
+N    AdjUp = (XDelta % YDelta) * 2;													/* DIV */
+N    
+N    /* Error term adjust when the error term turns over, used to factor
+N    ** out the X step made at that time
+N    */
+N    AdjDown = YDelta * 2;
+N    
+N    /* Initial error term; reflects an initial step of 0.5 along the Y axis 
+N     */
+N    ErrorTerm = (XDelta % YDelta) - (YDelta * 2);											/* DIV */
+N    
+N    /* The initial and last runs are partial, because Y advancse only 0.5
+N    ** for these runs, rather than 1.  Divide one full run, plus the
+N    ** initial pixel, between the initial and last runs.
+N    */
+N    InitialPixelCount = (WholeStep / 2) + 1;
+N    FinalPixelCount = InitialPixelCount;
+N    
+N    /* If the basic run length is even and there's no fractional
+N    ** advance, we have one pixel that could go to either the initial
+N    ** or last partial run, which we'll arbitrarily allocate to the
+N    ** last run
+N    */
+N    if ((AdjUp == 0) && ((WholeStep & 0x01) == 0))
+N      InitialPixelCount--;
+N    
+N    /* If there's an odd number of pixels per run, we have 1 pixel that can't
+N       ** be allocated to either the initial run or last partial run, so we'll add 0.5
+N       ** to error term so this pixel will be handled by the normal full-run loop
+N    */
+N    if ((WholeStep & 0x01) != 0)
+N      ErrorTerm += YDelta;
+N    
+N    /* Draw the first, partial run of pixels */
+N		#if DRAW_RUNS_AS_LINES // TODO: Fixing here
+X		#if (0) 
+S		p.X = XStart;
+S		p.Y = pe.Y = YStart;
+S		if (XAdvance > 0) {
+S			pe.X = XStart + InitialPixelCount;
+S			LCD_Fill_Rectangle(&p, &pe, color);
+S		} else {
+S			pe.X = XStart - InitialPixelCount;
+S			LCD_Fill_Rectangle(&pe, &p, color);
+S		}
+S		p.X = pe.X;
+N#else
+N    for (j = 0; j < InitialPixelCount; j++) {
+N			LCD_Plot_Pixel(&p, color);
+N			p.X += XAdvance;
+N		}
+N#endif
+N    p.Y++;
+N    
+N    /* Draw all full runs */
+N    for (i = 0; i < (YDelta - 1); i++) {
+N			RunLength = WholeStep; /* run is at least this long */
+N			/* Advance the error term and add an extra pixel if the error
+N			** term so indicates
+N			*/
+N			if ((ErrorTerm += AdjUp) > 0) {
+N				RunLength++;
+N				ErrorTerm -= AdjDown; /* reset the error term */
+N			}
+N
+N			/* Draw this scan line's run */
+N#if DRAW_RUNS_AS_LINES
+X#if (0)
+S			pe.Y = p.Y;
+S			pe.X = p.X + RunLength;
+S			LCD_Fill_Rectangle(&p, &pe, color);
+S			p.X = pe.X;
+N#else
+N			for (j = 0; j < RunLength; j++) {
+N				LCD_Plot_Pixel(&p, color);
+N				p.X += XAdvance;
+N			}
+N#endif
+N			p.Y++;
+N		}
+N    
+N    /* Draw the final run of pixels */
+N#if DRAW_RUNS_AS_LINES
+X#if (0)
+S		pe.Y = p.Y;
+S		pe.X = pe.X + FinalPixelCount;
+S		LCD_Fill_Rectangle(&p, &pe, color);
+S		p.X = pe.X;
+N#else
+N    for (j = 0; j < FinalPixelCount; j++) {
+N			LCD_Plot_Pixel(&p, color);
+N			p.X += XAdvance;
+N		}
+N#endif
+N    p.Y++;
+N    
+N    return;
+N  } else {
+N    /* Y major line */
+N    
+N    /* Minimum # of pixels in a run in this line */
+N    WholeStep = YDelta / XDelta;										/* DIV */
+N    
+N    /* Error term adjust each time X steps by 1; used to tell when 1 extra
+N    ** pixel should be drawn as part of a run, to account for
+N    ** fractional steps along the Y axis per 1-pixel steps along X
+N    */
+N    AdjUp = (YDelta % XDelta) * 2;										/* DIV */
+N    
+N    /* Error term adjust when the error term turns over, used to factor
+N    ** out the Y step made at that time
+N    */
+N    AdjDown = XDelta * 2;
+N    
+N    /* Initial error term; reflects initial step of 0.5 along the X axis */
+N    ErrorTerm = (YDelta % XDelta) - (XDelta * 2);								/* DIV */
+N    
+N    /* The initial and last runs are partial, because X advances only 0.5
+N    ** for these runs, rather than 1.  Divide ony full run, plus the
+N    ** initial pixel, between the initial and last runs
+N    */
+N    
+N    InitialPixelCount = (WholeStep / 2) + 1;
+N    FinalPixelCount = InitialPixelCount;
+N    
+N    /* If the basic run length is even and there's no fractional
+N      ** advance, we have one pixel that could go to either the initial
+N      ** or last partial run, which we'll arbitrarily allocate to the
+N      ** last run
+N      */
+N      if ((AdjUp == 0) && ((WholeStep & 0x01) == 0)) {
+N				InitialPixelCount--;
+N			}
+N      
+N      /* If there's an odd number of pixels per run, we have 1 pixel that can't
+N	 ** be allocated to either the initial run or last partial run, so we'll add 0.5
+N	 ** to error term so this pixel will be handled by the normal full-run loop
+N      */
+N      if ((WholeStep & 0x01) != 0) {
+N				ErrorTerm += XDelta;
+N			}
+N      
+N      /* Draw the first, partial run of pixels */
+N#if DRAW_RUNS_AS_LINES
+X#if (0)
+S			p.X = pe.X = XStart;
+S			p.Y = YStart;
+S			pe.Y = YStart + InitialPixelCount;
+S			LCD_Fill_Rectangle(&p, &pe, color);
+N#else
+N      for (j = 0; j < InitialPixelCount; j++) {
+N				LCD_Plot_Pixel(&p, color);
+N				p.Y++;
+N			}
+N      /* Update x,y position */
+N      p.X += XAdvance;
+N#endif
+N      
+N      /* Draw all full runs */
+N      for (i = 0; i < (XDelta - 1); i++) {
+N				RunLength = WholeStep; /* run is at least this long */
+N	  
+N				/* Advance the error term and add an extra pixel if the error
+N				** term so indicates
+N				*/
+N				if ((ErrorTerm += AdjUp) > 0)	{
+N					RunLength++;
+N					ErrorTerm -= AdjDown; /* reset the error term */
+N				}
+N				
+N				/* Draw this scan line's run */
+N#if DRAW_RUNS_AS_LINES
+X#if (0)
+S				p.X = pe.X = XStart;
+S				p.Y = YStart;
+S				pe.Y = YStart + RunLength;
+S				LCD_Fill_Rectangle(&p, &pe, color);
+N#else
+N				for (j = 0; j < RunLength; j++) {
+N					LCD_Plot_Pixel(&p, color);
+N					p.Y++;
+N				}
+N				/* Update x,y position */
+N				p.X += XAdvance;
+N#endif
+N			}
+N      
+N      /* Draw the final run of pixels */
+N#if DRAW_RUNS_AS_LINES
+X#if (0)
+S			p.X = pe.X= XStart;
+S			p.Y = YStart;
+S			pe.Y = YStart + FinalPixelCount;
+S			LCD_Fill_Rectangle(&p, &pe, color);
+N#else
+N      for (j= 0; j < FinalPixelCount; j++) {
+N				LCD_Plot_Pixel(&p, color);
+N				p.Y++;
+N			}
+N      /* Update x,y position */
+N      p.X += XAdvance;
+N#endif    
+N      return;
+N	}
+N}
+N
+N/* Draw a circle at coordinates xm, ym with radius r and specified color c. */
+Nvoid LCD_Draw_Circle(PT_T * pc, int radius, COLOR_T * c, int filled) {
+N	PT_T p1, p2;
+N  int x = -radius, y = 0, err = 2-2*radius; /* II. Quadrant */ 
+N  if (filled>0) { 
+N		do {
+N      //setPixel(xm+x, ym-y); /* III. Quadrant */
+N		 	p1.X=pc->X+x;
+N			p1.Y=pc->Y-y;
+N			p2.X=pc->X-x;
+N			p2.Y=pc->Y-y;
+N			LCD_Draw_Line(&p1, &p2, c);
+N			p1.Y=pc->Y+y;
+N			p2.Y=pc->Y+y;
+N			LCD_Draw_Line(&p1, &p2, c);
+N
+N			radius = err;
+N      if (radius <= y) 
+N				err += ++y*2+1;           /* e_xy+e_y < 0 */
+N      if (radius > x || err > y) 
+N				err += ++x*2+1; /* e_xy+e_x > 0 or no 2nd y-step */
+N		} while (x < 0); 
+N } else {
+N		do {
+N      //setPixel(xm-x, ym+y); /*   I. Quadrant */
+N			p1.X=pc->X-x;
+N			p1.Y=pc->Y+y;
+N			LCD_Plot_Pixel(&p1,c);
+N      //setPixel(xm-y, ym-x); /*  II. Quadrant */
+N		 	p1.X=pc->X-y;
+N			p1.Y=pc->Y-x;
+N			LCD_Plot_Pixel(&p1,c);
+N      //setPixel(xm+x, ym-y); /* III. Quadrant */
+N		 	p1.X=pc->X+x;
+N			p1.Y=pc->Y-y;
+N			LCD_Plot_Pixel(&p1,c);
+N      //setPixel(xm+y, ym+x); /*  IV. Quadrant */
+N		 	p1.X=pc->X+y;
+N			p1.Y=pc->Y+x;
+N			LCD_Plot_Pixel(&p1,c);
+N      radius = err;
+N      if (radius <= y) err += ++y*2+1;           /* e_xy+e_y < 0 */
+N      if (radius > x || err > y) 
+N				err += ++x*2+1; /* e_xy+e_x > 0 or no 2nd y-step */
+N		} while (x < 0);
+N	}
+N}
+N
+N
